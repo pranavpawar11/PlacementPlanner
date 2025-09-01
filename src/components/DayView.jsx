@@ -410,7 +410,7 @@ const DayView = ({
             <div className={`p-2 sm:p-3 lg:p-4 border-b ${isDark ? 'border-gray-700/30' : 'border-gray-200/30'} flex-shrink-0 ${isDark ? 'bg-gray-900/50' : 'bg-gray-50/50'} backdrop-blur-sm`}>
               <div className="flex flex-col space-y-2">
                 {/* Mobile: Stacked Layout */}
-                <div className="flex flex-row space-x-2 sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+                <div className="flex flex-row space-x-2 items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <FilterSelect
                       label="Filter"
@@ -964,8 +964,8 @@ const MobileResourcesOverlay = ({ resourcesByType, isDark, onClose }) => {
         </div>
       </div>
       
-      <div className="flex-1 overflow-y-auto p-4">
-        <div className="space-y-4">
+      <div className="flex-1 overflow-y-auto scroll-thin p-4">
+        <div className="space-y-4 ">
           {Object.entries(resourcesByType).map(([type, resources]) => (
             <ResourceSection
               key={type}
