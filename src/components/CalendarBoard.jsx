@@ -2,21 +2,30 @@ import React, { useState } from 'react';
 import { Plus, ChevronDown, ChevronLeft, ChevronRight, Calendar, MoreHorizontal, Eye } from 'lucide-react';
 import TaskCard from './TaskCard';
 import { dateUtils } from '../utils/dateUtils';
+import { useApp } from '../context/AppProvider';
+import { useTaskManager } from '../hooks/useTaskManager';
 
-const CalendarBoard = ({ 
-  categories, 
-  currentDate, 
-  onDateChange, 
-  onAddTask, 
-  onEditTask, 
-  onDeleteTask, 
-  onToggleTask, 
-  onViewDay,
-  isDark,
-  isMobile,
-  searchTerm,
-  selectedCategory
-}) => {
+const CalendarBoard = ({}) => {
+
+  const {
+    categories,
+    currentDate,
+    setCurrentDate,
+    isDark,
+    isMobile,
+    searchTerm,
+    selectedCategory,
+    viewDay
+  } = useApp();
+
+  // Get task management functions
+  const {
+    handleAddTask,
+    handleEditTask,
+    handleDeleteTask,
+    handleToggleTask
+  } = useTaskManager();
+
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   const daysInMonth = dateUtils.getDaysInMonth(year, month);
@@ -66,11 +75,11 @@ const CalendarBoard = ({
   const navigateMonth = (direction) => {
     const newDate = new Date(currentDate);
     newDate.setMonth(month + direction);
-    onDateChange(newDate);
+    setCurrentDate(newDate);
   };
 
   const handleViewDayTasks = (day) => {
-    onViewDay(day);
+    viewDay(day);
   };
 
   if (isMobile) {
@@ -142,9 +151,9 @@ const CalendarBoard = ({
                     <TaskCard
                       key={task.id}
                       task={task}
-                      onEdit={onEditTask}
-                      onDelete={onDeleteTask}
-                      onToggle={onToggleTask}
+                      onEdit={handleEditTask}
+                      onDelete={handleDeleteTask}
+                      onToggle={handleToggleTask}
                       isDark={isDark}
                     />
                   ))}
@@ -346,9 +355,9 @@ const CalendarBoard = ({
                         <TaskCard
                           key={task.id}
                           task={task}
-                          onEdit={onEditTask}
-                          onDelete={onDeleteTask}
-                          onToggle={onToggleTask}
+                          onEdit={handleEditTask}
+                          onDelete={handleDeleteTask}
+                          onToggle={handleToggleTask}
                           isDark={isDark}
                           compact={true}
                           hideDate={true}

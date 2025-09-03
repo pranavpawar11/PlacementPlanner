@@ -1,16 +1,26 @@
+// components/Sidebar/Sidebar.jsx - Corrected sidebar using context
 import React, { useState } from 'react';
 import { Plus, ChevronLeft, ChevronRight, Menu } from 'lucide-react';
-import { useProgressTracker } from '../hooks/useProgressTracker';
+import { useApp } from '../../context/AppProvider';
+import { useCategoryManager } from '../../hooks/useCategoryManager';
+import { useProgressTracker } from '../../hooks/useProgressTracker';
 
-const Sidebar = ({ 
-  categories, 
-  onAddCategory, 
-  isDark, 
-  isMobile, 
-  onSelectCategory, 
-  selectedCategory 
-}) => {
+const Sidebar = () => {
+  // Get state and actions from context
+  const {
+    categories,
+    isDark,
+    isMobile,
+    selectedCategory
+  } = useApp();
+
+  // Get category management functions
+  const { handleAddCategory, handleSelectCategory } = useCategoryManager();
+
+  // Get progress tracking data
   const categoriesWithProgress = useProgressTracker(categories);
+
+  // Local state for sidebar collapse
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const toggleSidebar = () => {
@@ -24,8 +34,9 @@ const Sidebar = ({
         <div className="flex items-center space-x-4 overflow-x-auto scrollbar-thin pb-2">
           {/* Add Category Button */}
           <button
-            onClick={onAddCategory}
+            onClick={handleAddCategory}
             className="flex-shrink-0 flex flex-col items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all"
+            aria-label="Add new category"
           >
             <Plus size={20} />
             <span className="text-xs mt-1 font-medium">Add</span>
@@ -33,12 +44,13 @@ const Sidebar = ({
 
           {/* All Categories Filter */}
           <button
-            onClick={() => onSelectCategory('all')}
+            onClick={() => handleSelectCategory('all')}
             className={`flex-shrink-0 flex flex-col items-center justify-center w-16 h-16 rounded-xl transition-all ${
               selectedCategory === 'all'
                 ? `${isDark ? 'bg-blue-900/50 border-2 border-blue-500' : 'bg-blue-100 border-2 border-blue-500'}`
                 : `${isDark ? 'bg-gray-700/50' : 'bg-gray-100'}`
             }`}
+            aria-label="Show all categories"
           >
             <div className="w-6 h-6 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full mb-1"></div>
             <span className={`text-xs font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
@@ -50,12 +62,13 @@ const Sidebar = ({
           {categoriesWithProgress.map((category) => (
             <button
               key={category.id}
-              onClick={() => onSelectCategory(category.id)}
+              onClick={() => handleSelectCategory(category.id)}
               className={`flex-shrink-0 flex flex-col items-center justify-center w-16 h-16 rounded-xl transition-all ${
                 selectedCategory === category.id
                   ? `${isDark ? 'bg-blue-900/50 border-2 border-blue-500' : 'bg-blue-100 border-2 border-blue-500'}`
                   : `${isDark ? 'bg-gray-700/50' : 'bg-gray-100'}`
               }`}
+              aria-label={`Select ${category.name} category`}
             >
               <div className={`w-6 h-6 ${category.color} rounded-full mb-1 relative`}>
                 {/* Progress ring */}
@@ -110,12 +123,13 @@ const Sidebar = ({
             ? '0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2)' 
             : '0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1)'
         }}
+        aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       >
-        <div className=" flex items-center justify-center w-full h-full">
+        <div className="flex items-center justify-center w-full h-full">
           {isCollapsed ? (
             <ChevronRight 
               size={16} 
-              className=" transition-transform duration-200 group-hover:translate-x-0.5" 
+              className="transition-transform duration-200 group-hover:translate-x-0.5" 
             />
           ) : (
             <ChevronLeft 
@@ -135,9 +149,10 @@ const Sidebar = ({
             </h2>
           )}
           <button
-            onClick={onAddCategory}
+            onClick={handleAddCategory}
             className={`${isCollapsed ? 'w-12 h-12 p-0' : 'p-2.5'} bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center`}
-            title={isCollapsed ? "Add Category" : ""}
+            title={isCollapsed ? "Add Category" : "Add new category"}
+            aria-label="Add new category"
           >
             <Plus size={isCollapsed ? 24 : 18} />
           </button>
@@ -145,13 +160,21 @@ const Sidebar = ({
 
         {/* All Categories Filter */}
         <div
-          onClick={() => onSelectCategory('all')}
+          onClick={() => handleSelectCategory('all')}
           className={`${isCollapsed ? 'p-3' : 'p-4'} rounded-xl transition-all cursor-pointer hover:shadow-md mb-4 group ${
             selectedCategory === 'all'
               ? `${isDark ? 'bg-blue-900/30 border-blue-500' : 'bg-blue-50 border-blue-500'} border-2`
               : `${isDark ? 'bg-gray-700/50 hover:bg-gray-700' : 'bg-white/80 hover:bg-white'} border ${isDark ? 'border-gray-600' : 'border-gray-200'}`
           }`}
-          title={isCollapsed ? "All Categories" : ""}
+          title={isCollapsed ? "All Categories" : "Show all categories"}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleSelectCategory('all');
+            }
+          }}
         >
           {isCollapsed ? (
             <div className="flex flex-col items-center space-y-2">
@@ -171,7 +194,7 @@ const Sidebar = ({
                 </span>
               </div>
               <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                {categoriesWithProgress?.reduce((total, cat) => total + cat.totalTasks, 0)} tasks
+                {categoriesWithProgress.reduce((total, cat) => total + cat.totalTasks, 0)} tasks
               </span>
             </div>
           )}
@@ -179,10 +202,10 @@ const Sidebar = ({
 
         {/* Categories List */}
         <div className="space-y-3">
-          {categoriesWithProgress?.map((category, index) => (
+          {categoriesWithProgress.map((category, index) => (
             <div
               key={category.id}
-              onClick={() => onSelectCategory(category.id)}
+              onClick={() => handleSelectCategory(category.id)}
               className={`${isCollapsed ? 'p-3' : 'p-4'} rounded-xl transition-all cursor-pointer hover:shadow-md transform hover:scale-[1.02] group ${
                 selectedCategory === category.id
                   ? `${isDark ? 'bg-blue-900/30 border-blue-500 shadow-lg' : 'bg-blue-50 border-blue-500 shadow-lg'} border-2`
@@ -192,6 +215,14 @@ const Sidebar = ({
                 animationDelay: `${index * 50}ms`,
               }}
               title={isCollapsed ? `${category.name} - ${category.completedTasks}/${category.totalTasks} (${category.progress}%)` : ""}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleSelectCategory(category.id);
+                }
+              }}
             >
               {isCollapsed ? (
                 // Collapsed view
@@ -290,7 +321,7 @@ const Sidebar = ({
         </div>
 
         {/* Empty State */}
-        {categoriesWithProgress?.length === 0 && !isCollapsed && (
+        {categoriesWithProgress.length === 0 && !isCollapsed && (
           <div className={`text-center py-12 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
             <div className="mb-4">
               <div className={`w-16 h-16 mx-auto rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-100'} flex items-center justify-center mb-4`}>
@@ -300,7 +331,7 @@ const Sidebar = ({
             <p className="text-lg font-medium mb-2">No categories yet</p>
             <p className="text-sm mb-4">Create your first category to get started</p>
             <button
-              onClick={onAddCategory}
+              onClick={handleAddCategory}
               className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all shadow-md hover:shadow-lg"
             >
               Add Category
@@ -309,7 +340,7 @@ const Sidebar = ({
         )}
 
         {/* Collapsed Empty State */}
-        {categoriesWithProgress?.length === 0 && isCollapsed && (
+        {categoriesWithProgress.length === 0 && isCollapsed && (
           <div className="text-center py-8">
             <div className={`w-12 h-12 mx-auto rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-100'} flex items-center justify-center`}>
               <Plus size={20} className={`${isDark ? 'text-gray-400' : 'text-gray-500'} opacity-50`} />

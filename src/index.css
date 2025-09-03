@@ -1,8 +1,5 @@
 @import "tailwindcss";
 
-@plugin "tailwindcss-animate";
-@import "tw-animate-css";
-
 @layer base {
   :root {
     --background: 0 0% 100%;

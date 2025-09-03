@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useApp } from '../context/AppProvider';
+import { useTaskManager } from '../hooks/useTaskManager';
 import { 
   ArrowLeft, 
   Plus, 
@@ -27,17 +29,31 @@ import {
   BarChart3
 } from 'lucide-react';
 
-const DayView = ({ 
-  categories,
-  selectedDayData, 
-  onAddTask, 
-  onEditTask, 
-  onDeleteTask, 
-  onToggleTask, 
-  onBackToCalendar,
-  isDark,
-  isMobile
-}) => {
+const DayView = () => {
+  const {
+    categories,
+    backToCalendar,
+    currentDate,
+    selectedDayData,
+    setCurrentDate,
+    isDark,
+    isMobile,
+    searchTerm,
+    selectedCategory,
+    viewDay,
+    openModal,
+    setCurrentView
+  } = useApp();
+
+  // Get task management functions
+  const {
+    handleAddTask,
+    handleEditTask,
+    handleDeleteTask,
+    handleToggleTask,
+    handleSaveTask
+  } = useTaskManager();
+
   const [sortBy, setSortBy] = useState('priority');
   const [filterBy, setFilterBy] = useState('all');
   const [showResources, setShowResources] = useState(false);
@@ -122,6 +138,35 @@ const DayView = ({
     return `${mins}m`;
   };
 
+  // Handler functions - fixed to use proper prop names
+  const handleBackToCalendar = () => {
+    if (backToCalendar) {
+      backToCalendar();
+    } else {
+      setCurrentView('calendar');
+    }
+  };
+
+  const handleAddTaskClick = () => {
+    openModal('isTaskModalOpen', { selectedDate: selectedDayData.dateString });
+  };
+
+  const handleEditTaskClick = (task) => {
+    openModal('isTaskModalOpen', { editingTask: task });
+  };
+
+  const handleDeleteTaskClick = (taskId) => {
+    if (handleDeleteTask) {
+      handleDeleteTask(taskId);
+    }
+  };
+
+  const handleToggleTaskClick = (taskId) => {
+    if (handleToggleTask) {
+      handleToggleTask(taskId);
+    }
+  };
+
   return (
     <div className="flex-1 overflow-hidden scrollbar-thin flex flex-col">
       {/* Mobile-Optimized Header */}
@@ -138,7 +183,7 @@ const DayView = ({
               {/* Left Section */}
               <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
                 <button
-                  onClick={onBackToCalendar}
+                  onClick={handleBackToCalendar}
                   className={`group flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg ${
                     isDark 
                       ? 'bg-gray-800/60 text-gray-300 hover:bg-gray-800/80 border border-gray-700/50' 
@@ -291,7 +336,7 @@ const DayView = ({
                 
                 {/* Add Task Button - Mobile Optimized */}
                 <button
-                  onClick={() => onAddTask(selectedDayData.dateString)}
+                  onClick={handleAddTaskClick}
                   className="group px-2 sm:px-3 py-1.5 sm:py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 hover:scale-[1.02] font-medium text-xs sm:text-sm"
                 >
                   <Plus size={14} className="inline mr-1 sm:mr-1.5 group-hover:rotate-90 transition-transform duration-200" />
@@ -456,16 +501,16 @@ const DayView = ({
           {/* Enhanced Tasks List - Mobile Optimized */}
           <div className="flex-1 overflow-y-auto p-2 sm:p-3 lg:p-4">
             {totalTasks === 0 ? (
-              <EmptyState onAddTask={() => onAddTask(selectedDayData.dateString)} isDark={isDark} />
+              <EmptyState onAddTask={handleAddTaskClick} isDark={isDark} />
             ) : (
               <div className="space-y-2 sm:space-y-3">
                 {sortedTasks.map((task, index) => (
                   <EnhancedTaskCard
                     key={`${task.id}-${task.completed}-${index}`}
                     task={task}
-                    onEdit={onEditTask}
-                    onDelete={onDeleteTask}
-                    onToggle={onToggleTask}
+                    onEdit={handleEditTaskClick}
+                    onDelete={handleDeleteTaskClick}
+                    onToggle={handleToggleTaskClick}
                     isDark={isDark}
                     isExpanded={expandedTask === task.id}
                     onToggleExpand={() => setExpandedTask(expandedTask === task.id ? null : task.id)}
