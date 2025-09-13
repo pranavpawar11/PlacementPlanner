@@ -20,6 +20,13 @@ export const dateUtils = {
     return new Date(year, month, 1).getDay();
   },
   
+  isCurrentMonth: (date) => {
+    const now = new Date();
+    const targetDate = new Date(date);
+    return now.getMonth() === targetDate.getMonth() && 
+           now.getFullYear() === targetDate.getFullYear();
+  },
+  
   // Get month name from month number
   getMonthName: (month) => {
     const months = [
