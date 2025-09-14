@@ -2,15 +2,25 @@
 import React from "react";
 import { BookOpen } from "lucide-react";
 const EmptyResourcesState = ({ isDark }) => (
-  <div className={`text-center py-8 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-    <div className={`p-6 rounded-2xl ${isDark ? 'bg-gray-800/30' : 'bg-gray-100/30'} mb-4 inline-block`}>
-      <BookOpen size={40} className="opacity-50" />
+  <div className={`p-8 rounded-2xl text-center border ${
+    isDark ? 'bg-gray-800/40 border-gray-700/40' : 'bg-white/60 border-gray-200/40'
+  } backdrop-blur-sm`}>
+    <div className={`w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center ${
+      isDark ? 'bg-gray-700/50' : 'bg-gray-100/80'
+    }`}>
+      <BookOpen className={`w-10 h-10 ${
+        isDark ? 'text-gray-400' : 'text-gray-500'
+      }`} />
     </div>
-    <h4 className={`text-base font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
-      No resources yet
-    </h4>
-    <p className="text-sm max-w-xs mx-auto leading-relaxed">
-      Add learning materials to your tasks to build your personal study library
+    <h3 className={`text-lg font-semibold mb-3 ${
+      isDark ? 'text-gray-200' : 'text-gray-800'
+    }`}>
+      No Resources Yet
+    </h3>
+    <p className={`text-sm max-w-sm mx-auto ${
+      isDark ? 'text-gray-400' : 'text-gray-600'
+    }`}>
+      Add learning resources to your tasks to see them organized here by type.
     </p>
   </div>
 );
