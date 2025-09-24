@@ -1,5 +1,6 @@
-// components/Layout/Layout.jsx - Main application layout
 import React from 'react';
+import ToastContainer from '../UI/ToastContainer';
+import ConfirmationDialog from '../UI/ConfirmationDialog';
 import { useApp } from '../../context/AppProvider';
 import { theme } from '../../utils/theme';
 
@@ -10,7 +11,6 @@ import MainContent from './MainContent';
 import MobileSidebar from './MobileSidebar';
 import FloatingActionButton from './FloatingActionButton';
 import Modals from './Modals';
-
 const Layout = () => {
   const { isDark, isMobile, currentView } = useApp();
 
@@ -20,22 +20,19 @@ const Layout = () => {
         <Header />
 
         <div className="flex flex-1 overflow-hidden">
-          {/* Desktop Sidebar */}
           {!isMobile && <Sidebar />}
-          
-          {/* Main Content Area */}
           <MainContent />
         </div>
 
-        {/* Mobile Sidebar */}
         {isMobile && currentView === 'calendar' && <MobileSidebar />}
       </div>
 
-      {/* Floating Action Button for Mobile */}
       {isMobile && currentView === 'calendar' && <FloatingActionButton />}
-
-      {/* Modals */}
       <Modals />
+      
+      {/* NEW: Global UI Components */}
+      <ToastContainer />
+      <ConfirmationDialog />
     </div>
   );
 };

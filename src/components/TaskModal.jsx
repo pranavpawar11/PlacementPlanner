@@ -225,7 +225,7 @@ const TaskModal = ({
                   onKeyPress={(e) => handleKeyPress(e, "submit")}
                   className={`
                     w-full px-4 py-3 border rounded-lg 
-                    focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all
+                    focus:ring-2  focus:border-transparent transition-all
                     ${
                       isDark
                         ? "bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400"
@@ -253,7 +253,7 @@ const TaskModal = ({
                   }
                   className={`
                     w-full px-4 py-3 border rounded-lg 
-                    focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all
+                    focus:ring-2  focus:border-transparent transition-all
                     ${
                       isDark
                         ? "bg-gray-700 border-gray-600 text-gray-100"
@@ -288,7 +288,7 @@ const TaskModal = ({
                   }
                   className={`
                     w-full px-4 py-3 border rounded-lg 
-                    focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all
+                    focus:ring-2  focus:border-transparent transition-all
                     ${
                       isDark
                         ? "bg-gray-700 border-gray-600 text-gray-100"
@@ -365,7 +365,7 @@ const TaskModal = ({
                   }
                   className={`
                     w-full px-4 py-3 border rounded-lg 
-                    focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all
+                    focus:ring-2  focus:border-transparent transition-all
                     ${
                       isDark
                         ? "bg-gray-700 border-gray-600 text-gray-100"
@@ -396,7 +396,7 @@ const TaskModal = ({
                 rows={3}
                 className={`
                   w-full px-4 py-3 border rounded-lg 
-                  focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all
+                  focus:ring-2  focus:border-transparent transition-all
                   resize-none
                   ${
                     isDark
@@ -443,7 +443,7 @@ const TaskModal = ({
                   onKeyPress={(e) => handleKeyPress(e, "addTag")}
                   className={`
                     flex-1 px-3 py-2 border rounded-lg text-sm
-                    focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all
+                    focus:ring-2  focus:border-transparent transition-all
                     ${
                       isDark
                         ? "bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400"

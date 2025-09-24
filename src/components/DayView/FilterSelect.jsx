@@ -24,7 +24,7 @@ const FilterSelect = ({ label, value, onChange, options, icon: Icon, isDark, cla
                 isDark 
                   ? 'bg-gray-800/90 border-gray-600/60 text-gray-200 hover:border-gray-500/70 focus:border-blue-500/80 focus:bg-gray-800' 
                   : 'bg-white/90 border-gray-300/60 text-gray-700 hover:border-gray-400/70 focus:border-blue-500/80 focus:bg-white'
-              } focus:outline-none focus:ring-2 focus:ring-blue-500/20 backdrop-blur-sm shadow-sm font-medium hover:shadow-md focus:shadow-md`}
+              } focus:outline-none focus:ring-2 /20 backdrop-blur-sm shadow-sm font-medium hover:shadow-md focus:shadow-md`}
             >
               {options.map(option => (
                 <option key={option.value} value={option.value}>
@@ -63,7 +63,7 @@ const FilterSelect = ({ label, value, onChange, options, icon: Icon, isDark, cla
                   isDark 
                     ? 'bg-gray-800/90 border-gray-600/60 text-gray-200 hover:border-gray-500/70 focus:border-blue-500/80 focus:bg-gray-800' 
                     : 'bg-white/90 border-gray-300/60 text-gray-700 hover:border-gray-400/70 focus:border-blue-500/80 focus:bg-white'
-                } focus:outline-none focus:ring-2 focus:ring-blue-500/20 backdrop-blur-sm shadow-sm font-medium hover:shadow-md focus:shadow-md`}
+                } focus:outline-none focus:ring-2 /20 backdrop-blur-sm shadow-sm font-medium hover:shadow-md focus:shadow-md`}
               >
                 {options.map(option => (
                   <option key={option.value} value={option.value}>

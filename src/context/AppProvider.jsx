@@ -1,4 +1,3 @@
-// context/AppProvider.jsx - Global state management
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useTheme } from '../hooks/useTheme';
@@ -28,7 +27,7 @@ const initialState = {
   searchTerm: '',
   selectedCategory: 'all',
   isMobile: false,
-  currentView: 'calendar', // 'calendar' or 'day'
+  currentView: 'calendar', // 'calendar', 'day', or 'notifications'
   selectedDayData: null,
   
   // Modal states
@@ -150,6 +149,11 @@ const AppProvider = ({ children }) => {
     backToCalendar: () => {
       actions.setCurrentView('calendar');
       actions.setSelectedDayData(null);
+    },
+
+    // New navigation function for notifications
+    viewNotifications: () => {
+      actions.setCurrentView('notifications');
     }
   };
 

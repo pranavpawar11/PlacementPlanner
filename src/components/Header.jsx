@@ -35,7 +35,7 @@ const Header = ({ isDark, toggleTheme, onSearch, searchTerm }) => {
                 placeholder="Search tasks..."
                 value={searchTerm}
                 onChange={(e) => onSearch(e.target.value)}
-                className={`pl-10 pr-4 py-2.5 w-64 lg:w-80 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm ${
+                className={`pl-10 pr-4 py-2.5 w-64 lg:w-80 border rounded-xl focus:ring-2  focus:border-transparent transition-all shadow-sm ${
                   isDark 
                     ? 'bg-gray-700/80 border-gray-600 text-gray-100 placeholder-gray-400' 
                     : 'bg-white/80 border-gray-300 text-gray-900 placeholder-gray-500'
@@ -99,7 +99,7 @@ const Header = ({ isDark, toggleTheme, onSearch, searchTerm }) => {
                 placeholder="Search tasks..."
                 value={searchTerm}
                 onChange={(e) => onSearch(e.target.value)}
-                className={`pl-10 pr-4 py-2.5 w-full border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm ${
+                className={`pl-10 pr-4 py-2.5 w-full border rounded-xl focus:ring-2  focus:border-transparent transition-all shadow-sm ${
                   isDark 
                     ? 'bg-gray-700/80 border-gray-600 text-gray-100 placeholder-gray-400' 
                     : 'bg-white/80 border-gray-300 text-gray-900 placeholder-gray-500'
