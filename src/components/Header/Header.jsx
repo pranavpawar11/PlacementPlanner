@@ -56,7 +56,7 @@ const Header = () => {
             {/* Logo */}
             <div className="p-1 md:p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-sm shadow-md flex items-center justify-center">
               <img
-                src="/logo2.png"
+                src="/logo.png"
                 alt="PlaceMate Logo"
                 className="w-6 h-6 md:w-8 md:h-8 object-contain"
               />

@@ -2,16 +2,16 @@
 self.addEventListener("install", (event) => {
   console.log("Service Worker: Installed");
   event.waitUntil(
-    caches.open("v1").then((cache) => {
-      return cache.addAll([
-        "/",            // homepage
-        "/index.html",  // main HTML
-        "/manifest.json",
-        "/favicon.ico",
-        // add static assets if you want
-      ]);
-    })
-  );
+  caches.open("v1").then((cache) => {
+    return cache.addAll([
+      new URL("/", self.location.origin),
+      new URL("/index.html", self.location.origin),
+      new URL("/manifest.json", self.location.origin),
+      new URL("/logo.png", self.location.origin),
+    ]);
+  })
+);
+
 });
 
 self.addEventListener("activate", (event) => {

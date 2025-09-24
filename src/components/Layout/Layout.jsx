@@ -30,7 +30,7 @@ const Layout = () => {
       {isMobile && currentView === 'calendar' && <FloatingActionButton />}
       <Modals />
       
-      {/* NEW: Global UI Components */}
+      {/* Global UI Components */}
       <ToastContainer />
       <ConfirmationDialog />
     </div>

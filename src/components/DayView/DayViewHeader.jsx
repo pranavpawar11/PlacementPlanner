@@ -82,16 +82,16 @@ const DayViewHeader = ({
   return (
     <div
       className={`relative ${
-        isDark ? "bg-gray-900/95" : "bg-white/95"
+        isDark ? "bg-gray-900/50" : "bg-white/95"
       } backdrop-blur-xl border-b ${
         isDark ? "border-gray-700/30" : "border-gray-200/30"
       } flex-shrink-0`}
     >
       {/* Enhanced Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
+      {/* <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.1),transparent_50%)]" />
-      </div>
+      </div> */}
 
       <div className="relative">
         {/* Main Header */}
@@ -436,7 +436,7 @@ const DayViewHeader = ({
         )}
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes shimmer {
           0% {
             transform: translateX(-100%);
