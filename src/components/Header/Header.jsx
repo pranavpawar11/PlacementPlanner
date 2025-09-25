@@ -1,7 +1,9 @@
-// components/Header/Header.jsx - Combined header with notification toggle and consistent search
-import React, { useState, useMemo } from "react";
-import { Calendar, Sun, Moon, Search, X, Bell, CalendarDays } from "lucide-react";
+// components/Header/Header.jsx - Updated header with profile dropdown
+import React, { useState, useMemo, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Calendar, Sun, Moon, Search, X, Bell, CalendarDays, User, LogOut, Settings, ChevronDown } from "lucide-react";
 import { useApp } from "../../context/AppProvider";
+import { useAuthManager } from "../../hooks/useAuthManager";
 
 const Header = () => {
   // Get state and actions from context
@@ -15,8 +17,28 @@ const Header = () => {
     categories 
   } = useApp();
 
-  // Local state for mobile search toggle
+  const navigate = useNavigate()
+
+  const { user, logout, isLoggedIn, userInitials } = useAuthManager();
+
+  // Local state for mobile search toggle and profile dropdown
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileDropdownRef = useRef(null);
+
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
+        setIsProfileOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Calculate notification count
   const notificationCount = useMemo(() => {
@@ -40,6 +62,95 @@ const Header = () => {
   const handleCalendarToggle = () => {
     setCurrentView('calendar');
   };
+
+  // Handle logout
+  const handleLogout = async () => {
+    setIsProfileOpen(false);
+    const res = await logout();
+    if(res.success){
+      navigate('/login')
+    }
+  };
+
+  // Get user initials for avatar
+  const getUserInitials = (name) => {
+    if (!name) return 'U';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
+
+  // Profile dropdown component
+  const ProfileDropdown = ({ isMobile = false }) => (
+    <div className={`absolute ${isMobile ? 'right-0 top-12' : 'right-0 top-14'} w-64 z-50`}>
+      <div className={`${
+        isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+      } border rounded-xl shadow-xl backdrop-blur-md animate-in slide-in-from-top-2 duration-200`}>
+        {/* User Info Section */}
+        <div className={`p-4 border-b ${isDark ? "border-gray-700" : "border-gray-200"}`}>
+          <div className="flex items-center space-x-3">
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold ${
+              isDark ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white" : "bg-gradient-to-r from-blue-500 to-purple-600 text-white"
+            }`}>
+              {user?.avatar ? (
+                <img src={user.avatar} alt="Profile" className="w-full h-full rounded-full object-cover" />
+              ) : (
+                userInitials
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className={`text-sm font-semibold truncate ${isDark ? "text-gray-100" : "text-gray-900"}`}>
+                {user?.name || 'User'}
+              </p>
+              <p className={`text-xs truncate ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                {user?.email || 'user@example.com'}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Menu Items */}
+        <div className="py-2">
+          <button
+            onClick={() => {
+              setIsProfileOpen(false);
+              // Add profile settings navigation logic here
+            }}
+            className={`w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors ${
+              isDark ? "hover:bg-gray-700/50 text-gray-300" : "hover:bg-gray-50 text-gray-700"
+            }`}
+          >
+            <Settings size={16} />
+            <span className="text-sm">Account Settings</span>
+          </button>
+          
+          <button
+            onClick={() => {
+              setIsProfileOpen(false);
+              // Add profile view navigation logic here
+            }}
+            className={`w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors ${
+              isDark ? "hover:bg-gray-700/50 text-gray-300" : "hover:bg-gray-50 text-gray-700"
+            }`}
+          >
+            <User size={16} />
+            <span className="text-sm">View Profile</span>
+          </button>
+
+          <hr className={`my-2 ${isDark ? "border-gray-700" : "border-gray-200"}`} />
+
+          <button
+            onClick={handleLogout}
+            onMouseDown={(e) => e.stopPropagation()}
+            className={`w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors ${
+              isDark ? "hover:bg-red-900/20 text-red-400" : "hover:bg-red-50 text-red-600"
+            }`}
+          >
+            <LogOut size={16} />
+            <span className="text-sm">Sign Out</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <header
@@ -149,6 +260,44 @@ const Header = () => {
             >
               {isDark ? <Sun size={20} /> : <Moon size={20} />}
             </button>
+
+            {/* Profile Dropdown - Desktop */}
+            {isLoggedIn && (
+              <div className="relative" ref={profileDropdownRef}>
+                <button
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className={`flex items-center space-x-2 p-2 rounded-xl transition-all hover:scale-105 shadow-sm focus-ring ${
+                    isProfileOpen
+                      ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
+                      : isDark
+                      ? "bg-gray-700/80 text-gray-300 hover:bg-gray-600/80"
+                      : "bg-gray-100/80 text-gray-600 hover:bg-gray-200/80"
+                  }`}
+                  title="Profile menu"
+                  aria-label="Profile menu"
+                >
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${
+                    isProfileOpen 
+                      ? "bg-white/20" 
+                      : isDark 
+                      ? "bg-gradient-to-r from-blue-500 to-purple-600" 
+                      : "bg-gradient-to-r from-blue-500 to-purple-600"
+                  } ${isProfileOpen ? "text-white" : "text-white"}`}>
+                    {user?.avatar ? (
+                      <img src={user.avatar} alt="Profile" className="w-full h-full rounded-full object-cover" />
+                    ) : (
+                      userInitials
+                    )}
+                  </div>
+                  <ChevronDown 
+                    size={16} 
+                    className={`transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} 
+                  />
+                </button>
+
+                {isProfileOpen && <ProfileDropdown />}
+              </div>
+            )}
           </div>
 
           {/* Mobile Controls */}
@@ -204,6 +353,38 @@ const Header = () => {
             >
               {isDark ? <Sun size={18} /> : <Moon size={18} />}
             </button>
+
+            {/* Profile Dropdown - Mobile */}
+            {isLoggedIn && (
+              <div className="relative" ref={profileDropdownRef}>
+                <button
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className={`p-2.5 rounded-xl transition-all hover:scale-105 focus-ring ${
+                    isProfileOpen
+                      ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
+                      : isDark
+                      ? "bg-gray-700/80 text-gray-300 hover:bg-gray-600/80"
+                      : "bg-gray-100/80 text-gray-600 hover:bg-gray-200/80"
+                  }`}
+                  title="Profile menu"
+                  aria-label="Profile menu"
+                >
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold ${
+                    isProfileOpen 
+                      ? "bg-white/20 text-white" 
+                      : "bg-gradient-to-r from-blue-500 to-purple-600 text-white"
+                  }`}>
+                    {user?.avatar ? (
+                      <img src={user.avatar} alt="Profile" className="w-full h-full rounded-full object-cover" />
+                    ) : (
+                      userInitials
+                    )}
+                  </div>
+                </button>
+
+                {isProfileOpen && <ProfileDropdown isMobile={true} />}
+              </div>
+            )}
           </div>
         </div>
 

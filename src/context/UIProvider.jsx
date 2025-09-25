@@ -1,4 +1,4 @@
-// context/UIProvider.js
+// context/UIProvider.js - Updated with missing methods
 import React, { createContext, useContext, useState, useCallback } from 'react';
 
 const UIContext = createContext();
@@ -40,6 +40,11 @@ const UIProvider = ({ children }) => {
     setToasts([]);
   }, []);
 
+  // Dismiss specific toast by ID
+  const dismissToast = useCallback((id) => {
+    removeToast(id);
+  }, [removeToast]);
+
   // Confirmation dialog management
   const showConfirmDialog = useCallback((config) => {
     return new Promise((resolve) => {
@@ -59,31 +64,73 @@ const UIProvider = ({ children }) => {
 
   // Convenience methods for different toast types
   const toast = {
-    success: (message, options = {}) => addToast({ 
-      type: 'success', 
-      message, 
-      title: options.title || 'Success',
-      ...options 
-    }),
-    error: (message, options = {}) => addToast({ 
-      type: 'error', 
-      message, 
-      title: options.title || 'Error',
-      duration: options.duration || 7000, // Errors stay longer
-      ...options 
-    }),
-    warning: (message, options = {}) => addToast({ 
-      type: 'warning', 
-      message, 
-      title: options.title || 'Warning',
-      ...options 
-    }),
-    info: (message, options = {}) => addToast({ 
-      type: 'info', 
-      message, 
-      title: options.title || 'Info',
-      ...options 
-    }),
+    success: (title, options = {}) => {
+      // Handle both (title, options) and (options) patterns
+      if (typeof title === 'object') {
+        return addToast({ type: 'success', title: 'Success', ...title });
+      }
+      return addToast({ 
+        type: 'success', 
+        title: options.title || 'Success',
+        message: title,
+        ...options 
+      });
+    },
+    error: (title, options = {}) => {
+      if (typeof title === 'object') {
+        return addToast({ type: 'error', title: 'Error', duration: 7000, ...title });
+      }
+      return addToast({ 
+        type: 'error', 
+        title: options.title || 'Error',
+        message: title,
+        duration: options.duration || 7000,
+        ...options 
+      });
+    },
+    warning: (title, options = {}) => {
+      if (typeof title === 'object') {
+        return addToast({ type: 'warning', title: 'Warning', ...title });
+      }
+      return addToast({ 
+        type: 'warning', 
+        title: options.title || 'Warning',
+        message: title,
+        ...options 
+      });
+    },
+    info: (title, options = {}) => {
+      if (typeof title === 'object') {
+        return addToast({ type: 'info', title: 'Info', ...title });
+      }
+      return addToast({ 
+        type: 'info', 
+        title: options.title || 'Info',
+        message: title,
+        ...options 
+      });
+    },
+    loading: (title, options = {}) => {
+      if (typeof title === 'object') {
+        return addToast({ 
+          type: 'loading', 
+          title: 'Loading...', 
+          duration: 0, 
+          dismissible: false, 
+          ...title 
+        });
+      }
+      return addToast({
+        type: 'loading',
+        title: options.title || 'Loading...',
+        message: title,
+        duration: 0, // Loading toasts don't auto-dismiss
+        dismissible: false, // Can't be manually dismissed
+        ...options
+      });
+    },
+    dismiss: dismissToast, // Method to dismiss specific toasts
+    dismissAll: clearAllToasts, // Method to dismiss all toasts
     custom: addToast
   };
 
@@ -103,7 +150,37 @@ const UIProvider = ({ children }) => {
       cancelText: 'Discard',
       type: 'primary'
     }),
-    custom: showConfirmDialog
+    custom: (config) => {
+      // Enhanced custom confirmation with text confirmation support
+      if (config.requireTextConfirmation) {
+        return new Promise((resolve) => {
+          setConfirmDialog({
+            ...config,
+            requireTextConfirmation: config.requireTextConfirmation,
+            onConfirm: (inputValue) => {
+              setConfirmDialog(null);
+              // Check if the input matches the required text
+              if (inputValue === config.requireTextConfirmation) {
+                resolve(true);
+              } else {
+                // Show error toast for wrong input
+                toast.error('Incorrect confirmation text', {
+                  message: `Please type "${config.requireTextConfirmation}" exactly`,
+                  duration: 4000
+                });
+                resolve(false);
+              }
+            },
+            onCancel: () => {
+              setConfirmDialog(null);
+              resolve(false);
+            }
+          });
+        });
+      } else {
+        return showConfirmDialog(config);
+      }
+    }
   };
 
   const value = {
@@ -111,6 +188,7 @@ const UIProvider = ({ children }) => {
     toasts,
     addToast,
     removeToast,
+    dismissToast, // Added missing method
     clearAllToasts,
     toast,
     
