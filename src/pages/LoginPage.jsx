@@ -100,7 +100,7 @@ const LoginPage = () => {
     });
 
     if (res.success) {
-      navigate("/");
+      navigate("/home");
     }
     // AuthManager now handles error toasts automatically
   };

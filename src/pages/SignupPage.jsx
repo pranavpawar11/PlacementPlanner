@@ -1,18 +1,28 @@
 // pages/SignupPage.jsx
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthProvider';
-import { Mail, Phone, Eye, EyeOff, Lock, User, AlertCircle, UserPlus, Calendar } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthProvider";
+import {
+  Mail,
+  Phone,
+  Eye,
+  EyeOff,
+  Lock,
+  User,
+  AlertCircle,
+  UserPlus,
+  Calendar,
+} from "lucide-react";
 
 const SignupPage = ({ onSwitchToLogin }) => {
-     const navigate = useNavigate();
+  const navigate = useNavigate();
   const { signup, isLoading, error, clearError } = useAuth();
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirmPassword: ''
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -26,12 +36,12 @@ const SignupPage = ({ onSwitchToLogin }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
     if (validationErrors[name]) {
-      setValidationErrors(prev => ({ ...prev, [name]: null }));
+      setValidationErrors((prev) => ({ ...prev, [name]: null }));
     }
-    
+
     if (error) {
       clearError();
     }
@@ -43,43 +53,43 @@ const SignupPage = ({ onSwitchToLogin }) => {
     switch (currentStep) {
       case 1:
         if (!formData.name.trim()) {
-          errors.name = 'Full name is required';
+          errors.name = "Full name is required";
         } else if (formData.name.trim().length < 2) {
-          errors.name = 'Name must be at least 2 characters';
+          errors.name = "Name must be at least 2 characters";
         }
         break;
 
       case 2:
         if (!formData.email.trim()) {
-          errors.email = 'Email address is required';
+          errors.email = "Email address is required";
         } else {
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
           if (!emailRegex.test(formData.email)) {
-            errors.email = 'Please enter a valid email address';
+            errors.email = "Please enter a valid email address";
           }
         }
 
         if (!formData.phone.trim()) {
-          errors.phone = 'Phone number is required';
+          errors.phone = "Phone number is required";
         } else {
           const phoneRegex = /^\+?[\d\s-()]{10,}$/;
           if (!phoneRegex.test(formData.phone)) {
-            errors.phone = 'Please enter a valid phone number';
+            errors.phone = "Please enter a valid phone number";
           }
         }
         break;
 
       case 3:
         if (!formData.password) {
-          errors.password = 'Password is required';
+          errors.password = "Password is required";
         } else if (formData.password.length < 8) {
-          errors.password = 'Password must be at least 8 characters';
+          errors.password = "Password must be at least 8 characters";
         }
 
         if (!formData.confirmPassword) {
-          errors.confirmPassword = 'Please confirm your password';
+          errors.confirmPassword = "Please confirm your password";
         } else if (formData.password !== formData.confirmPassword) {
-          errors.confirmPassword = 'Passwords do not match';
+          errors.confirmPassword = "Passwords do not match";
         }
         break;
     }
@@ -105,18 +115,20 @@ const SignupPage = ({ onSwitchToLogin }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateStep(3)) {
       return;
     }
 
-    await signup({
+    const res = await signup({
       name: formData.name.trim(),
       email: formData.email.trim().toLowerCase(),
       phone: formData.phone.trim(),
-      password: formData.password
+      password: formData.password,
     });
-     navigate("/login");
+    if (res.success) {
+      navigate("/login");
+    }
   };
 
   const getStepProgress = () => ((step - 1) / 2) * 100;
@@ -131,17 +143,25 @@ const SignupPage = ({ onSwitchToLogin }) => {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
             Join PlaceMate
           </h1>
-          <p className="text-gray-600">Create your account and start your preparation journey</p>
+          <p className="text-gray-600">
+            Create your account and start your preparation journey
+          </p>
         </div>
 
         <div className="mb-6">
           <div className="flex justify-between text-xs text-gray-500 mb-2">
-            <span className={step >= 1 ? 'text-blue-600 font-medium' : ''}>Basic Info</span>
-            <span className={step >= 2 ? 'text-blue-600 font-medium' : ''}>Contact</span>
-            <span className={step >= 3 ? 'text-blue-600 font-medium' : ''}>Security</span>
+            <span className={step >= 1 ? "text-blue-600 font-medium" : ""}>
+              Basic Info
+            </span>
+            <span className={step >= 2 ? "text-blue-600 font-medium" : ""}>
+              Contact
+            </span>
+            <span className={step >= 3 ? "text-blue-600 font-medium" : ""}>
+              Security
+            </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
+            <div
               className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300"
               style={{ width: `${getStepProgress()}%` }}
             ></div>
@@ -170,8 +190,8 @@ const SignupPage = ({ onSwitchToLogin }) => {
                     placeholder="Enter your full name"
                     className={`block w-full pl-11 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                       validationErrors.name
-                        ? 'border-red-300 bg-red-50'
-                        : 'border-gray-300 bg-white/50'
+                        ? "border-red-300 bg-red-50"
+                        : "border-gray-300 bg-white/50"
                     }`}
                     disabled={isLoading}
                   />
@@ -203,8 +223,8 @@ const SignupPage = ({ onSwitchToLogin }) => {
                       placeholder="Enter your email address"
                       className={`block w-full pl-11 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                         validationErrors.email
-                          ? 'border-red-300 bg-red-50'
-                          : 'border-gray-300 bg-white/50'
+                          ? "border-red-300 bg-red-50"
+                          : "border-gray-300 bg-white/50"
                       }`}
                       disabled={isLoading}
                     />
@@ -233,8 +253,8 @@ const SignupPage = ({ onSwitchToLogin }) => {
                       placeholder="Enter your phone number"
                       className={`block w-full pl-11 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                         validationErrors.phone
-                          ? 'border-red-300 bg-red-50'
-                          : 'border-gray-300 bg-white/50'
+                          ? "border-red-300 bg-red-50"
+                          : "border-gray-300 bg-white/50"
                       }`}
                       disabled={isLoading}
                     />
@@ -260,15 +280,15 @@ const SignupPage = ({ onSwitchToLogin }) => {
                       <Lock size={18} className="text-gray-400" />
                     </div>
                     <input
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword ? "text" : "password"}
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
                       placeholder="Create a strong password"
                       className={`block w-full pl-11 pr-12 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                         validationErrors.password
-                          ? 'border-red-300 bg-red-50'
-                          : 'border-gray-300 bg-white/50'
+                          ? "border-red-300 bg-red-50"
+                          : "border-gray-300 bg-white/50"
                       }`}
                       disabled={isLoading}
                     />
@@ -301,25 +321,31 @@ const SignupPage = ({ onSwitchToLogin }) => {
                       <Lock size={18} className="text-gray-400" />
                     </div>
                     <input
-                      type={showConfirmPassword ? 'text' : 'password'}
+                      type={showConfirmPassword ? "text" : "password"}
                       name="confirmPassword"
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       placeholder="Confirm your password"
                       className={`block w-full pl-11 pr-12 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                         validationErrors.confirmPassword
-                          ? 'border-red-300 bg-red-50'
-                          : 'border-gray-300 bg-white/50'
+                          ? "border-red-300 bg-red-50"
+                          : "border-gray-300 bg-white/50"
                       }`}
                       disabled={isLoading}
                     />
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
                       disabled={isLoading}
                     >
-                      {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      {showConfirmPassword ? (
+                        <EyeOff size={18} />
+                      ) : (
+                        <Eye size={18} />
+                      )}
                     </button>
                   </div>
                   {validationErrors.confirmPassword && (
@@ -352,7 +378,7 @@ const SignupPage = ({ onSwitchToLogin }) => {
                   Previous
                 </button>
               )}
-              
+
               {step < 3 ? (
                 <button
                   type="button"
@@ -385,14 +411,14 @@ const SignupPage = ({ onSwitchToLogin }) => {
 
             <div className="text-center pt-4">
               <p className="text-sm text-gray-600">
-                Already have an account?{' '}
+                Already have an account?{" "}
                 <button
-  type="button"
-  onClick={() => navigate("/login")}
-  className="text-blue-600 hover:text-blue-700 font-medium hover:underline"
->
-  Sign in here
-</button>
+                  type="button"
+                  onClick={() => navigate("/login")}
+                  className="text-blue-600 hover:text-blue-700 font-medium hover:underline"
+                >
+                  Sign in here
+                </button>
               </p>
             </div>
           </form>
